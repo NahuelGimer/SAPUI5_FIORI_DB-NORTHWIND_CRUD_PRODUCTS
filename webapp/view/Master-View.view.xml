@@ -1,0 +1,191 @@
+<mvc:View controllerName="sapui5final.controller.Master-View" displayBlock="true"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:l="sap.ui.layout"
+    xmlns:semantic="sap.f.semantic"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    <Shell>
+        <App busy="{appView>/busy}" class="sapUiSizeCompact">
+            <pages>
+                <Page title="{i18n>peoplePageTitle}">
+                    <headerContent>
+                        <FlexBox>
+                            <HBox>
+                                <ObjectAttribute text="{i18n>unitsInStockText}"/>
+                                <ObjectAttribute text="{i18n>stock}"/>
+                            </HBox>
+                        </FlexBox>
+                    </headerContent>
+                    <content>
+                        <l:ResponsiveSplitter defaultPane="defaultPane">
+
+                            <l:PaneContainer orientation="Horizontal">
+
+                                <l:SplitPane id="defaultPane">
+                                    <l:layoutData>
+                                        <l:SplitterLayoutData id="defaultLayout" size="100%" resizable="false"/>
+                                    </l:layoutData>
+
+                                    <Table rows="{/Products}" id="peopleList" growing="true" growingThreshold="10" items="{
+											path: '/Products',
+											parameters: {
+												$count: true,
+												$$updateGroupId : 'peopleGroup'
+											}
+										}" mode="SingleSelectLeft" selectionChange=".onSelectionChange">
+                                        <headerToolbar>
+                                            <OverflowToolbar>
+                                                <content>
+                                                    <ToolbarSpacer/>
+                                                    <SearchField id="searchField" width="20%" placeholder="{i18n>searchFieldPlaceholder}" enabled="{= !${appView>/hasUIChanges}}" search=".onSearch"/>
+                                                    <Button id="addUserButton" icon="sap-icon://add" tooltip="{i18n>createButtonText}" press=".onCreate">
+                                                        <layoutData>
+                                                            <OverflowToolbarLayoutData priority="NeverOverflow"/>
+                                                        </layoutData>
+                                                    </Button>
+                                                    <Button id="deleteUserButton" icon="sap-icon://delete" tooltip="{i18n>deleteButtonText}" press=".onDelete">
+                                                        <layoutData>
+                                                            <OverflowToolbarLayoutData priority="NeverOverflow"/>
+                                                        </layoutData>
+                                                    </Button>
+                                                    <Button id="refreshUsersButton" icon="sap-icon://refresh" enabled="{= !${appView>/hasUIChanges}}" tooltip="{i18n>refreshButtonText}" press=".onRefresh"/>
+                                                    <Button id="sortUsersButton" icon="sap-icon://sort" enabled="{= !${appView>/hasUIChanges}}" tooltip="{i18n>sortButtonText}" press=".onSort"/>
+                                                </content>
+                                            </OverflowToolbar>
+                                        </headerToolbar>
+                                        <columns>
+                                            <Column id="productName">
+                                                <Text text="{i18n>productNameText}"/>
+                                            </Column>
+                                            <Column id="unitPrice">
+                                                <Text text="{i18n>unitPriceText}"/>
+                                            </Column>
+                                            <Column id="unitsInStock">
+                                                <Text text="{i18n>unitsInStockText}"/>
+                                            </Column>
+                                            <Column id="categoryName">
+                                                <Text text="{i18n>categoryNameText}"/>
+                                            </Column>
+                                            <Column id="supplierName">
+                                                <Text text="{i18n>supplierNameText}"/>
+                                            </Column>
+                                            <Column id="discontinuedName">
+
+                                                <HBox>
+                                                    <Text text="{i18n>discontinuedText}"/>
+                                                    <StandardListItem icon="sap-icon://warning">
+                                                    </StandardListItem>
+                                                </HBox>
+                                            </Column>
+
+                                            <Column id="statusName">
+                                                <Text text="{i18n>statusText}"/>
+                                            </Column>
+
+                                            <Column id="test1">
+                                                <Text text="test1"/>
+                                            </Column>
+                                        </columns>
+                                        <items>
+                                            <ColumnListItem>
+                                                <cells>
+                                                    <Input value="{ProductName}" valueLiveUpdate="true" liveChange=".onInputChange"/>
+                                                </cells>
+                                                <cells>
+                                                    <Input value="{UnitPrice}" liveChange=".onInputChange"/>
+                                                </cells>
+                                                <cells>
+                                                    <Input value="{UnitsInStock}" liveChange=".onInputChange"/>
+                                                </cells>
+                                                <cells>
+                                                    <ObjectStatus text="{parts: ['CategoryID'],
+                    formatter:'.formatter.categoryType'}"/>
+                                                </cells>
+                                                <cells>
+
+                                                    <Input value="Company Inc">
+                                                    </Input>
+
+
+                                                </cells>
+                                                <cells>
+                                                    <ObjectStatus state="{= ${Discontinued}? 'Error' : 'Success' }" text="{= ${Discontinued} ? ${i18n>Discontinued} : ${i18n>Available} }" />
+                                                </cells>
+                                                <cells>
+                                                    <ObjectStatus state="{= ${UnitsInStock} > 10 ? 'Success' : 'Error' }" text="{parts: ['i18n>stock', 'UnitsInStock'],
+                    							formatter:'.formatter.statusText'}"/>
+                                                </cells>
+                                                <cells>
+                                                    <ObjectStatus text="{i18n>stock}"/>
+                                                </cells>
+
+                                            </ColumnListItem>
+                                        </items>
+                                    </Table>
+                                </l:SplitPane>
+                                <l:SplitPane>
+                                    <!--Details-->
+                                    <!--remove busy-->
+                                    <semantic:SemanticPage id="detailArea" visible="false">
+                                        <semantic:titleHeading>
+                                            <Title text="{i18n>detailView}" level="H2"/>
+                                        </semantic:titleHeading>
+
+                                        <semantic:headerContent>
+                                            <core:Fragment xmlns:core="sap.ui.core"
+                                                xmlns:m="sap.m" id="idFragHeader" fragmentName="sapui5final.utils.fragments.Detail-View" type="XML"/>
+                                        </semantic:headerContent>
+                                        <semantic:content>
+                                            <VBox>
+                                                <HBox>
+                                                    <Button text="{i18n>confirm}" class="sapUiSmallMarginBottom" id="confirmBtn" press=".onConfirmationMessageBoxPress" width="200px" ariaHasPopup="Dialog" type="Accept"/>
+                                                    <Button text="{i18n>deny}" class="sapUiSmallMarginBottom" id="denyBtn" press=".onInfoMessageBoxPress" width="200px" ariaHasPopup="Dialog" type="Reject" />
+                                                </HBox>
+
+                                                <Table id="friendsTable" width="auto" items="{product>/Products}" noDataText="No Data" class="sapUiSmallMarginBottom">
+                                                    <headerToolbar>
+                                                        <Toolbar>
+                                                            <Title text="{i18n>orders}" titleStyle="H3" level="H3"/>
+                                                        </Toolbar>
+                                                    </headerToolbar>
+                                                    <columns>
+                                                        <Column>
+                                                            <Text text="{i18n>productIdText}"/>
+                                                        </Column>
+                                                        <Column>
+                                                            <Text text="{i18n>productNameText}"/>
+                                                        </Column>
+                                                        <Column>
+                                                            <Text text="{i18n>unitsOnOrderText}"/>
+                                                        </Column>
+                                                    </columns>
+                                                    <items>
+                                                        <ColumnListItem>
+                                                            <cells>
+                                                                <Text text="{product>Status}"/>
+                                                            </cells>
+                                                            <cells>
+                                                                <Text text="{product>ProductName}"/>
+                                                            </cells>
+                                                            <cells>
+                                                                <Text text="{product>Quantity}"/>
+                                                            </cells>
+                                                        </ColumnListItem>
+                                                    </items>
+                                                </Table>
+                                            </VBox>
+                                        </semantic:content>
+                                    </semantic:SemanticPage>
+                                </l:SplitPane>
+                            </l:PaneContainer>
+                        </l:ResponsiveSplitter>
+                    </content>
+                    <footer>
+
+                    </footer>
+                </Page>
+            </pages>
+        </App>
+    </Shell>
+</mvc:View>
